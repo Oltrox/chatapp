@@ -34,5 +34,37 @@ function scrollToBottom() {
 scrollToBottom();
 
 
-agregarMensaje("lokiiiitooooo","WENA",remoto=true);
-agregarMensaje("lokiiiitooooo","WEN2A");
+
+/*
+ *
+ *    SOCKET.IO
+ *
+*/
+
+$(function() {
+    var socket = io.connect();
+    var $mensaje = $('#nuevo-mensaje');
+
+    $('#boton-enviar').on('click',function(){
+        // Enviar el mensaje
+        socket.emit('enviar msg', $mensaje.val());
+
+        // Se agrega al historial
+        agregarMensaje($mensaje.val(), 'sin usuario');
+
+        // Limpiar el textarea
+        $mensaje.val('');
+
+        // Hacer scroll hasta el final para mantener mensajes recientes
+        scrollToBottom();
+    });
+
+
+    socket.on('nuevo msg', function(data){
+        agregarMensaje(data.mensaje, 'sin usuario', remoto=true);
+
+        scrollToBottom();
+    });
+
+})
+

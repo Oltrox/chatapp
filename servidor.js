@@ -19,6 +19,20 @@ io.sockets.on('connection', function(socket){
     console.log('Se ha conectado un usuario');
 
     // Desconexion
-    // sockets.splice(sockets.indexOf(socket),1);
+    socket.on('disconnect', function(data){
+
+        // Se elimina de la lista de conexiones activas
+        sockets.splice(sockets.indexOf(socket), 1);
+        console.log('Se ha desconectado un usuario');
+    });
+
+    socket.on('enviar msg', function(data){
+
+        // Emitir a todos excepto al que envia
+        socket.broadcast.emit('nuevo msg', {mensaje: data});
+    })
+
+
 
 }) 
+
