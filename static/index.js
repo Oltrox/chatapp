@@ -1,4 +1,5 @@
 const messages = document.getElementById('mensajes');
+var contactos = [];
 
 function agregarMensaje(mensaje, usuario, remoto=false) {
     if(remoto){
@@ -31,7 +32,26 @@ function scrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
 }
 
+$('#ingresarBoton').on('click', function(){
+
+    var username = $('#usuario').val();
+
+    if(username != ''){
+        $('#usuarioForm').css("display","none");
+        $('#chatForm').css("display","");
+    }else{
+        alert("Debe ingresar un nombre de usuario");
+    }
+
+
+})
+
+
+
 scrollToBottom();
+
+
+
 
 
 
@@ -47,10 +67,13 @@ $(function() {
 
     $('#boton-enviar').on('click',function(){
         // Enviar el mensaje
-        socket.emit('enviar msg', $mensaje.val());
+        socket.emit('enviar msg', {
+            msg: $mensaje.val(),
+            usr: $('#usuario').val()
+        });
 
         // Se agrega al historial
-        agregarMensaje($mensaje.val(), 'sin usuario');
+        agregarMensaje($mensaje.val(), $('#usuario').val());
 
         // Limpiar el textarea
         $mensaje.val('');
@@ -61,10 +84,16 @@ $(function() {
 
 
     socket.on('nuevo msg', function(data){
-        agregarMensaje(data.mensaje, 'sin usuario', remoto=true);
 
+        if ($('#usuario').val() == data.usr){
+            agregarMensaje(data.msg, data.usr, remoto=true);
+        }
+
+        
         scrollToBottom();
     });
+
+
 
 })
 
