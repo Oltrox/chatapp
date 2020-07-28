@@ -4,7 +4,6 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 sockets = [];
-var temp_socket = '';
 
 
 server.listen(process.env.PORT || 5000);
@@ -30,6 +29,7 @@ io.sockets.on('connection', function(socket){
     socket.on('enviar msg', function(data){
 
         // Emitir a todos excepto al que envia
+        console.log("Nuevo mensaje listo para emitir: %s",data);
         socket.broadcast.emit('nuevo msg', data);
     })
 

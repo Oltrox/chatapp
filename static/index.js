@@ -1,5 +1,8 @@
 const messages = document.getElementById('mensajes');
 const listado = document.getElementById('listado');
+var nombreusuario = '';
+var nowContact = '';
+var firstSelection = true;
 var contactos = [];
 
 function agregarMensaje(mensaje, usuario, remoto=false) {
@@ -13,7 +16,9 @@ function agregarMensaje(mensaje, usuario, remoto=false) {
     newMessage.style.display = '';
     newMessage.querySelector('#chat-texto').innerHTML = mensaje;
     newMessage.querySelector('#chat-usuario').innerHTML = usuario;
-    messages.appendChild(newMessage);
+
+    var nuevosmensajes = document.getElementById('mensajesnuevos');
+    nuevosmensajes.appendChild(newMessage);
 }
 
 function agregarContacto(contacto){
@@ -23,6 +28,7 @@ function agregarContacto(contacto){
 
     newContacto.querySelector('#nombrecontacto').innerHTML = contacto;
     newContacto.style.display = '';
+    newContacto.setAttribute('datauser', contacto);
     listado.appendChild(newContacto);
 
 }
@@ -44,13 +50,36 @@ function scrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
 }
 
+function selectUser(contacto){
+    
+    if (firstSelection){
+        $('#chatmensaje').css('display','none');
+        $('#chattodo').css('display','');
+        firstSelection = false;
+    }
+
+    if (contacto != nowContact){
+        nowContact = contacto;
+        $('#mensajesnuevos').empty();
+        $('#contactoSeleccionadoText').text(nowContact);
+    }else{
+        alert("Ha seleccionado el mismo usuario con el que quiere contactarse");
+    }
+
+}
+
+
 $('#ingresarBoton').on('click', function(){
 
     var username = $('#usuario').val();
 
+
     if(username != ''){
         $('#usuarioForm').css("display","none");
         $('#chatForm').css("display","");
+        $('#conectadocomo').text(username);
+
+        nombreusuario = username;
     }else{
         alert("Debe ingresar un nombre de usuario");
     }
@@ -61,6 +90,11 @@ $('#ingresarBoton').on('click', function(){
 $('#nuevoContactoBoton').on('click', function(){
 
     var nuevoContacto = $('#nuevoContactoTexto').val();
+
+    if (nuevoContacto == nombreusuario){
+        alert("No puedes agregarte a ti mismo como contacto");
+        return;
+    }
 
     if (nuevoContacto != ''){
         agregarContacto(nuevoContacto);
@@ -91,10 +125,13 @@ $(function() {
     var $mensaje = $('#nuevo-mensaje');
 
     $('#boton-enviar').on('click',function(){
+
+
         // Enviar el mensaje
         socket.emit('enviar msg', {
             msg: $mensaje.val(),
-            usr: $('#usuario').val()
+            usr: $('#usuario').val(),
+            rmtusr: nowContact
         });
 
         // Se agrega al historial
@@ -110,7 +147,7 @@ $(function() {
 
     socket.on('nuevo msg', function(data){
 
-        if ($('#usuario').val() == data.usr){
+        if ($('#usuario').val() == data.rmtusr){
             agregarMensaje(data.msg, data.usr, remoto=true);
         }
 
