@@ -45,11 +45,10 @@
                         <div class="row" id="usuarioForm" style="background: #fff;">
                             <div class="col-12">
                                 <div class="form-group text-center">
-                                    <label for="usuario">Ingrese el nombre de usuario</label>
+                                    <label for="usuario">Ingrese un nombre de usuario</label>
                                     <input class="form-control" type="text" id="usuario" autocomplete="off">
                                     <button class="btn btn-primary mt-2" id="ingresarBoton">Ingresar</button>
                                 </div>
-
                             </div>
                         </div>
 
@@ -61,9 +60,9 @@
 
                                     <div class="chat-search-box">
                                         <div class="input-group">
-                                            <input class="form-control" placeholder="Agregar contacto">
+                                            <input class="form-control" placeholder="Agregar contacto" id="nuevoContactoTexto">
                                             <div class="input-group-btn">
-                                                <button type="button" class="btn btn-info">
+                                                <button type="button" class="btn btn-info" id="nuevoContactoBoton">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
@@ -71,14 +70,14 @@
                                     </div>
 
 
-                                    <ul class="users">
-                                        <li class="person" data-chat="person1">
+                                    <ul class="users" id="listado">
+                                        <li class="person" data-chat="" id="contacto" style="display:none;">
                                             <div class="user">
                                                 <img src="/static/images.png" alt="Retail Admin">
                                                 <span class="status online"></span>
                                             </div>
                                             <p class="name-time">
-                                                <span class="name">Steve Bangalter</span>
+                                                <span class="name" id="nombrecontacto">Steve Bangalter</span>
                                             </p>
                                         </li>
                                     </ul>

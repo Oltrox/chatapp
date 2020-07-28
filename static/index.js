@@ -1,4 +1,5 @@
 const messages = document.getElementById('mensajes');
+const listado = document.getElementById('listado');
 var contactos = [];
 
 function agregarMensaje(mensaje, usuario, remoto=false) {
@@ -13,6 +14,17 @@ function agregarMensaje(mensaje, usuario, remoto=false) {
     newMessage.querySelector('#chat-texto').innerHTML = mensaje;
     newMessage.querySelector('#chat-usuario').innerHTML = usuario;
     messages.appendChild(newMessage);
+}
+
+function agregarContacto(contacto){
+
+    var contactoObj = document.getElementById('contacto');
+    const newContacto = contactoObj.cloneNode(true);
+
+    newContacto.querySelector('#nombrecontacto').innerHTML = contacto;
+    newContacto.style.display = '';
+    listado.appendChild(newContacto);
+
 }
 
 function getMessages() {
@@ -46,6 +58,19 @@ $('#ingresarBoton').on('click', function(){
 
 })
 
+$('#nuevoContactoBoton').on('click', function(){
+
+    var nuevoContacto = $('#nuevoContactoTexto').val();
+
+    if (nuevoContacto != ''){
+        agregarContacto(nuevoContacto);
+        $('#nuevoContactoTexto').val('');
+    }else{
+        alert("Debe ingresar un alias no vacío");
+    }
+    
+
+});
 
 
 scrollToBottom();
