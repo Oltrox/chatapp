@@ -31,6 +31,8 @@ function agregarContacto(contacto){
     newContacto.setAttribute('datauser', contacto);
     listado.appendChild(newContacto);
 
+    contactos.push(newContacto);
+
 }
 
 function getMessages() {
@@ -66,6 +68,12 @@ function selectUser(contacto){
         alert("Ha seleccionado el mismo usuario con el que quiere contactarse");
     }
 
+
+}
+
+
+function toggleSelection(element){
+    $(element).addClass('selected').siblings().removeClass('selected')
 }
 
 

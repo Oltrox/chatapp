@@ -204,6 +204,22 @@ display: none;
 ************************************************
 ************************************************/
 
+.selected{
+    background-color: #ffffff;
+    /* Fallback Color */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#a0a5aa), to(#ffffff));
+    /* Saf4+, Chrome */
+    background-image: -webkit-linear-gradient(right, #a0a5aa, #ffffff);
+    /* Chrome 10+, Saf5.1+, iOS 5+ */
+    background-image: -moz-linear-gradient(right, #a0a5aa, #ffffff);
+    /* FF3.6 */
+    background-image: -ms-linear-gradient(right, #a0a5aa, #ffffff);
+    /* IE10 */
+    background-image: -o-linear-gradient(right, #a0a5aa, #ffffff);
+    /* Opera 11.10+ */
+    background-image: linear-gradient(right, #a0a5aa, #ffffff);
+}
+
 .selected-user {
 width: 100%;
 padding: 0 15px;

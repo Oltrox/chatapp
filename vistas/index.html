@@ -25,7 +25,7 @@
         <div class="page-title">
             <div class="row gutters">
                 <div class="col-12 text-center mb-2">
-                    <h5 class="title">Chat App | Conectado como <span style="font-weight:bold;" id="conectadocomo"></span></h5>
+                    <h5 class="title">Chat App | Conectado como: <span style="font-weight:bold;" id="conectadocomo">SIN NOMBRE DE USUARIO</span></h5>
                 </div>
 
             </div>
@@ -71,7 +71,7 @@
 
 
                                     <ul class="users" id="listado">
-                                        <li class="person" datauser="" id="contacto" style="display:none;" onclick="selectUser(this.attributes.datauser.value)">
+                                        <li class="person" datauser="" id="contacto" style="display:none;" onclick="selectUser(this.attributes.datauser.value);toggleSelection(this)">
                                             <div class="user">
                                                 <img src="/static/images.png" alt="Retail Admin">
                                                 <span class="status online"></span>
