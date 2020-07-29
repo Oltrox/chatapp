@@ -1,10 +1,11 @@
 var express = require('express');
+const { callbackify } = require('util');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 sockets = [];
-
+usuarios = {};
 
 server.listen(process.env.PORT || 5000);
 
@@ -14,6 +15,8 @@ app.get('/', function(request, response){
     response.sendFile(__dirname + "/vistas/index.html");
 })
 
+
+// Funciones disponibles al momento de conectarse
 io.sockets.on('connection', function(socket){
     sockets.push(socket);
     console.log('Se ha conectado un usuario');
@@ -21,17 +24,54 @@ io.sockets.on('connection', function(socket){
     // Desconexion
     socket.on('disconnect', function(data){
 
+        // Se elimina de la lista de usuarios registrados
+        Object.entries(usuarios).forEach(([key,value]) => {
+            if(value == socket.id){
+                delete usuarios[key];
+                console.log("Se ha ido el usuario '%s' con socket '%s'",key,value);
+            }
+        })        
+        
         // Se elimina de la lista de conexiones activas
         sockets.splice(sockets.indexOf(socket), 1);
-        console.log('Se ha desconectado un usuario');
+        console.log("Usuario desconectado");
     });
 
-    socket.on('enviar msg', function(data){
+    // Para enviar un mensaje, en caso de que el usuario no este en
+    // la plataforma retorna una respuesta negativa para el cliente
+    socket.on('enviar msg', function(data, callback){
+        
+        respuesta = {"enviado":true};
+        if (usuarios[data.rmtusr]){
+            // Emitir solo al usuario especificado
+            io.to(usuarios[data.rmtusr]).emit('nuevo msg',data);
+            console.log("Nuevo mensaje emitido a '%s' desde '%s': ",data.rmtusr,data.usr,data.msg);
+        }else{
+            respuesta = {"enviado":false};
+            console.log("El usuario '%s' no ha ingresado", data.rmtusr);
+        }
+        
+        callback(respuesta);
 
-        // Emitir a todos excepto al que envia
-        console.log("Nuevo mensaje listo para emitir: %s",data);
-        socket.broadcast.emit('nuevo msg', data);
-    })
+    });
+
+    // Cuando se registra un usuario con un alias, es almacenado en memoria
+    // para verificar si este esta dentro de la plataforma o no.
+    socket.on('registrar usr', function(data, callback){
+
+        respuesta = {"esta":false}
+        if(usuarios[data.usr]){
+            respuesta = {"esta":true}
+            console.log("Usuario '%s' ya se encuentra registrado",data.usr);
+        }else{
+            usuarios[data.usr] = data.id;
+            console.log("Usuario '%s' registrado con socket '%s'", data.usr, data.id);
+        }
+
+        callback(respuesta);
+
+    });
+
 
 
 }) 

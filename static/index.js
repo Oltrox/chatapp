@@ -4,7 +4,10 @@ var nombreusuario = '';
 var nowContact = '';
 var firstSelection = true;
 var contactos = [];
+var contactosElements = [];
 
+/* Funcion que permite agrear un mensaje al chat, dependiendo si 
+es del lado remoto (izquierdo) o no (derecho) */
 function agregarMensaje(mensaje, usuario, remoto=false) {
     if(remoto){
         var message = document.getElementsByClassName('chat-left')[0];
@@ -21,6 +24,9 @@ function agregarMensaje(mensaje, usuario, remoto=false) {
     nuevosmensajes.appendChild(newMessage);
 }
 
+/* Funcion que permite agregar contactos en el listado izquierdo
+de la interfaz del usuario, ademas de agregar los nombres al arreglo contactos, y 
+los elementos de estos nombres al arreglo contactosElements */
 function agregarContacto(contacto){
 
     var contactoObj = document.getElementById('contacto');
@@ -31,27 +37,20 @@ function agregarContacto(contacto){
     newContacto.setAttribute('datauser', contacto);
     listado.appendChild(newContacto);
 
-    contactos.push(newContacto);
+    contactos.push(contacto);
+    contactosElements.push(newContacto);
 
 }
 
-function getMessages() {
-	// Prior to getting your messages.
-  shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
-  /*
-   * Get your messages, we'll just simulate it by appending a new one syncronously.
-   */
-  appendMessage();
-  // After getting your messages.
-  if (!shouldScroll) {
-      scrollToBottom();
-  }
-}
 
+/* Funcion que permite mantener el chat siempre en el fondo
+cuando hay muchos mensajes */
 function scrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
 }
 
+/* Funcion que permite limpiar el chat y colocar el nombre del contacto
+seleccionado para generar el chat nuevo con ese usuario*/
 function selectUser(contacto){
     
     if (firstSelection){
@@ -65,42 +64,32 @@ function selectUser(contacto){
         $('#mensajesnuevos').empty();
         $('#contactoSeleccionadoText').text(nowContact);
     }else{
-        alert("Ha seleccionado el mismo usuario con el que quiere contactarse");
+        swal.fire({
+            title: 'No permitido',
+            text: "Ha seleccionado el mismo usuario con el que quiere contactarse",
+            icon: "warning"
+        });
     }
 
 
 }
 
-
+/* Funcion que permite cambiar el CSS de un elemento para 
+que parezca seleccionado */
 function toggleSelection(element){
     $(element).addClass('selected').siblings().removeClass('selected')
 }
-
-
-$('#ingresarBoton').on('click', function(){
-
-    var username = $('#usuario').val();
-
-
-    if(username != ''){
-        $('#usuarioForm').css("display","none");
-        $('#chatForm').css("display","");
-        $('#conectadocomo').text(username);
-
-        nombreusuario = username;
-    }else{
-        alert("Debe ingresar un nombre de usuario");
-    }
-
-
-})
 
 $('#nuevoContactoBoton').on('click', function(){
 
     var nuevoContacto = $('#nuevoContactoTexto').val();
 
     if (nuevoContacto == nombreusuario){
-        alert("No puedes agregarte a ti mismo como contacto");
+        swal.fire({
+            title: 'No permitido',
+            text: "No puedes agregarte tu usuario como contacto",
+            icon: "error"
+        });
         return;
     }
 
@@ -108,7 +97,11 @@ $('#nuevoContactoBoton').on('click', function(){
         agregarContacto(nuevoContacto);
         $('#nuevoContactoTexto').val('');
     }else{
-        alert("Debe ingresar un alias no vacío");
+        swal.fire({
+            title: 'No permitido',
+            text: "Debes ingresar un alias no vacío",
+            icon: "error"
+        });
     }
     
 
@@ -121,7 +114,6 @@ scrollToBottom();
 
 
 
-
 /*
  *
  *    SOCKET.IO
@@ -129,17 +121,33 @@ scrollToBottom();
 */
 
 $(function() {
+
+    // Se genera el socket
     var socket = io.connect();
     var $mensaje = $('#nuevo-mensaje');
 
+    /* 
+        Al clickear el boton de envio se realiza el envio a través del socket.
+        El socket espera una respuesta para saber si su mensaje fue enviado al usuario,
+        es decir, saber si el usuario se encontraba ingresado en la plataforma.
+    */
     $('#boton-enviar').on('click',function(){
-
 
         // Enviar el mensaje
         socket.emit('enviar msg', {
             msg: $mensaje.val(),
             usr: $('#usuario').val(),
             rmtusr: nowContact
+        }, function(respuesta){
+
+            if(respuesta.enviado == false){
+                swal.fire({
+                    title: '¡Atención!',
+                    text: "El usuario no ha ingresado a la plataforma aún, por lo tanto no podrá recibir ningún mensaje",
+                    icon: "warning"
+                });
+            }
+
         });
 
         // Se agrega al historial
@@ -153,15 +161,99 @@ $(function() {
     });
 
 
+    /*
+        Al momento de ingresar se emite un mensaje por el socket, que permite
+        la asociacion del socket id con el nombre de usuario en el servidor.
+        Luego de esta accion, es posible agregar contactos e interactuar con
+        los chats.
+    */
+    $('#ingresarBoton').on('click', function(){
+
+        var username = $('#usuario').val();
+    
+        if(username != ''){
+
+            socket.emit('registrar usr', {
+                usr: username,
+                id: socket.id
+            }, function(respuesta){
+                
+                if(respuesta.esta == true){
+                    swal.fire({
+                        title: 'No permitido',
+                        text: "Ya hay un usuario con ese nombre",
+                        icon: "error"
+                    });
+                }else{
+                    $('#usuarioForm').css("display","none");
+                    $('#chatForm').css("display","");
+                    $('#conectadocomo').text(username);
+                    nombreusuario = username;
+                }
+
+            });
+
+
+        }else{
+            
+            swal.fire({
+                title: 'No permitido',
+                text: "Debe ingresar un nombre de usuario",
+                icon: "error"
+            });
+            
+        }
+    
+    
+    })
+
+    /*
+        Se reciben los mensajes que son emitidos del servidor.
+        Tiene varias situaciones que pueden ocurrir:
+        1. Si el usuario no tiene en su lista de contactos a quien envio el mensaje
+            este se muestra con una alerta.
+        2. Si el usuario tiene al usuario en sus contactos, pero no tiene abierta
+            su ventana de chat, y no ha abierto ningun chat, 
+            esta se abrira automaticamente mostrando el mensaje
+        3. Si el usuario tiene al usuario en sus contactos, pero no tiene abierta
+            su ventana de chat, y esta en otro chat, 
+            esta se abrira automaticamente mostrando el mensaje eliminando el contenido
+            del chat anterior.
+    */
     socket.on('nuevo msg', function(data){
 
-        if ($('#usuario').val() == data.rmtusr){
-            agregarMensaje(data.msg, data.usr, remoto=true);
+        // Comprobacion innecesaria, ya que el propio servidor gestiona
+        // a traves del socket id aquien le emite el mensaje.
+        if (nombreusuario == data.rmtusr){
+            console.log(data.usr, contactos);
+            if(contactos.includes(data.usr)){
+
+                if (nowContact != data.usr){
+                    selectUser(data.usr);
+
+                    contactosElements.forEach(element => {
+                        if(element.attributes.datauser.value == data.usr){
+                            toggleSelection(element);
+                        }
+                    });
+
+                }
+
+                agregarMensaje(data.msg, data.usr, remoto=true);
+            }else{
+                swal.fire({
+                    title: ':D',
+                    text: "Has recibido un mensaje de '"+data.usr+"' pero no lo tienes en tus contactos. Debes agregarlo para chatear con ese usuario. El mensaje era: "+data.msg,
+                    icon: "info"
+                });
+            }
+
+            
         }
 
-        
         scrollToBottom();
     });
+
 
 
 
