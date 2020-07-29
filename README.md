@@ -22,4 +22,6 @@ Ejecutar en una terminal, dentro de la carpeta:
 
 ## Consideraciones
 
-* Para generar un chat, ambos deben tenerse agregados a los contactos y abierta la ventana de chat para recibir los mensajes.
+* Para generar un chat, ambos deben tenerse agregados a los contactos.
+* El nombre de usuario no puede repetirse en la plataforma.
+* No se puede agregar el alias que es ingresado como un nuevo contacto.
