@@ -20,6 +20,8 @@ Ejecutar en una terminal, dentro de la carpeta:
 
     node servidor
 
+El servidor de ejecutará en el puerto 5000
+
 ## Consideraciones
 
 * Para generar un chat, ambos deben tenerse agregados a los contactos.

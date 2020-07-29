@@ -1,5 +1,4 @@
 var express = require('express');
-const { callbackify } = require('util');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
@@ -7,7 +6,8 @@ var io = require('socket.io').listen(server);
 sockets = [];
 usuarios = {};
 
-server.listen(process.env.PORT || 5000);
+var listener = server.listen(process.env.PORT || 5000);
+console.log("Servidor en ejecución el puerto %s", listener.address().port);
 
 app.use('/static', express.static(__dirname + '/static'));
 
