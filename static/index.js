@@ -181,7 +181,7 @@ $(function() {
     */
     $('#ingresarBoton').on('click', function(){
 
-        var username = $('#usuario').val();
+        var username = $('#usuario').val().replace(/(\r\n|\n|\r)/gm,"").replace(/ /g,'');
     
         if(username != ''){
 
@@ -213,6 +213,10 @@ $(function() {
                 text: "Debe ingresar un nombre de usuario",
                 icon: "error"
             });
+
+            $('#usuario').val('');
+
+
             
         }
     

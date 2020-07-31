@@ -302,7 +302,12 @@ border-color: transparent #ffffff transparent transparent;
 }
 
 .chat-container li.chat-right > .chat-text {
-text-align: right;
+text-align: left;
+overflow: hidden;
+}
+
+.chat-container li.chat-left > .chat-text {
+    overflow: hidden;
 }
 
 .chat-container li.chat-right > .chat-text:before {

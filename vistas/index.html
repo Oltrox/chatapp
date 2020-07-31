@@ -51,10 +51,19 @@
                                 <div class="form-group text-center">
                                     <label for="usuario">Ingrese un nombre de usuario</label>
                                     <input class="form-control" type="text" id="usuario" autocomplete="off">
-                                    <button class="btn btn-primary mt-2" id="ingresarBoton">Ingresar</button>
+                                    <button class="btn btn-info mt-2" id="ingresarBoton">Ingresar</button>
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <h5>Consideraciones con los nombres de usuario</h2>
+                                <ol>
+                                    <li>Los nombres de usuario no pueden contener espacios. Si los tienes, serán eliminados.</li>
+                                    <li>No son case sensitive, es decir, si hay un usuario que se llama 'Chat' y otro que se llama 'cHaT', ambos son considerados el mismo usuario.</li>
+                                </ol>
+                            </div>
                         </div>
+
 
 
                         <!-- Row start -->
@@ -101,7 +110,7 @@
                                     </div>
 
                                     <div class="chat-container">
-                                        <ul class="chat-box chatContainerScroll" id="mensajes"> 
+                                        <ul class="chat-box chatContainerScroll" id="mensajes" style="scrollbar-width: thin;"> 
 
                                             <li class="chat-right" id="chat-right" style="display:none">
                                                 <div class="chat-text" id="chat-texto"></div>
@@ -125,7 +134,7 @@
                                         </ul>
                                         
                                         <div class="form-group mt-3 mb-0">
-                                            <textarea class="form-control" rows="3" placeholder="Escribe tu mensaje aqui..." id="nuevo-mensaje"></textarea>
+                                            <textarea class="form-control" rows="3" placeholder="Escribe tu mensaje aqui..." id="nuevo-mensaje" style="min-height:100px; max-height:150px;"></textarea>
                                         </div>
                                         
                                         <div class="text-right">

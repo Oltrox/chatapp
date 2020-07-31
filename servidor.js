@@ -57,15 +57,19 @@ io.sockets.on('connection', function(socket){
 
     // Cuando se registra un usuario con un alias, es almacenado en memoria
     // para verificar si este esta dentro de la plataforma o no.
+    // Se limpia el string para evitar conflicto con caracteres como el salto de linea
+    // y se compara y guarda en minusulas
     socket.on('registrar usr', function(data, callback){
 
+        var newUsuarioSave = data.usr.trim().replace(/(\r\n|\n|\r)/gm,"").replace(/ /g,'').toLowerCase();
+
         respuesta = {"esta":false}
-        if(usuarios[data.usr]){
+        if(usuarios[newUsuarioSave]){
             respuesta = {"esta":true}
-            console.log("Usuario '%s' ya se encuentra registrado",data.usr);
+            console.log("Usuario '%s' ya se encuentra registrado como: '%s'", data.usr, newUsuarioSave);
         }else{
-            usuarios[data.usr] = data.id;
-            console.log("Usuario '%s' registrado con socket '%s'", data.usr, data.id);
+            usuarios[newUsuarioSave] = data.id;
+            console.log("Usuario '%s' registrado con socket '%s' como: '%s'", data.usr, data.id, newUsuarioSave);
         }
 
         callback(respuesta);
