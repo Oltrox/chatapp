@@ -107,6 +107,13 @@ $('#nuevoContactoBoton').on('click', function(){
 
 });
 
+/* Evento que permite detectar la presion del enter para enviar el mensaje */
+document.getElementById('nuevo-mensaje').addEventListener('keyup', (e) => {
+    if (e.keyCode === 13) {
+        document.getElementById('boton-enviar').click();
+    }
+}, false);
+
 
 scrollToBottom();
 
@@ -132,6 +139,11 @@ $(function() {
         es decir, saber si el usuario se encontraba ingresado en la plataforma.
     */
     $('#boton-enviar').on('click',function(){
+
+        // Si el mensaje esta vacio, se limpia el text-area
+        if ($mensaje.val().trim().replace(/(\r\n|\n|\r)/gm,"") == ""){
+            $mensaje.val(''); return;
+        }
 
         // Enviar el mensaje
         socket.emit('enviar msg', {
