@@ -7,9 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniel Moran; Marcela Ravanales",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
+    "bufferutil": "*",
     "express": "*",
-    "socket.io": "*"
+    "socket.io": "*",
+    "utf-8-validate": "*"
   }
 }
