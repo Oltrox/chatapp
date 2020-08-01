@@ -7,7 +7,7 @@ sockets = [];
 usuarios = {};
 
 var listener = server.listen(process.env.PORT || 5000);
-console.log("Servidor en ejecución el puerto %s", listener.address().port);
+console.log("Servidor en ejecución en el puerto %s", listener.address().port);
 
 app.use('/static', express.static(__dirname + '/static'));
 
@@ -19,9 +19,9 @@ app.get('/', function(request, response){
 // Funciones disponibles al momento de conectarse
 io.sockets.on('connection', function(socket){
     sockets.push(socket);
-    console.log('Se ha conectado un usuario');
+    console.log('SOCKET: Se ha conectado un usuario');
 
-    // Desconexion
+    // Desconexion de un usuario
     socket.on('disconnect', function(data){
 
         // Se elimina de la lista de usuarios registrados
@@ -34,7 +34,7 @@ io.sockets.on('connection', function(socket){
         
         // Se elimina de la lista de conexiones activas
         sockets.splice(sockets.indexOf(socket), 1);
-        console.log("Usuario desconectado");
+        console.log("SOCKET: Usuario desconectado");
     });
 
     // Para enviar un mensaje, en caso de que el usuario no este en

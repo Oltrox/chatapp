@@ -82,7 +82,7 @@ function toggleSelection(element){
 
 $('#nuevoContactoBoton').on('click', function(){
 
-    var nuevoContacto = $('#nuevoContactoTexto').val();
+    var nuevoContacto = $('#nuevoContactoTexto').val().trim().replace(/(\r\n|\n|\r)/gm,"").replace(/ /g,'').toLowerCase();
 
     if (nuevoContacto == nombreusuario){
         swal.fire({
@@ -94,7 +94,18 @@ $('#nuevoContactoBoton').on('click', function(){
     }
 
     if (nuevoContacto != ''){
-        agregarContacto(nuevoContacto);
+
+        if (contactos.includes(nuevoContacto)){
+            swal.fire({
+                title: 'No permitido',
+                text: "El contacto ya esta registrado",
+                icon: "error"
+            }); 
+            return;
+        }else{
+            agregarContacto(nuevoContacto);
+        }
+
         $('#nuevoContactoTexto').val('');
     }else{
         swal.fire({
@@ -108,8 +119,9 @@ $('#nuevoContactoBoton').on('click', function(){
 });
 
 /* Evento que permite detectar la presion del enter para enviar el mensaje */
-document.getElementById('nuevo-mensaje').addEventListener('keyup', (e) => {
+document.getElementById('nuevo-mensaje').addEventListener('keydown', (e) => {
     if (e.keyCode === 13) {
+        e.preventDefault();
         document.getElementById('boton-enviar').click();
     }
 }, false);
@@ -148,7 +160,7 @@ $(function() {
         // Enviar el mensaje
         socket.emit('enviar msg', {
             msg: $mensaje.val(),
-            usr: $('#usuario').val(),
+            usr: $('#usuario').val().trim().replace(/(\r\n|\n|\r)/gm,"").replace(/ /g,'').toLowerCase(),
             rmtusr: nowContact
         }, function(respuesta){
 
@@ -181,7 +193,7 @@ $(function() {
     */
     $('#ingresarBoton').on('click', function(){
 
-        var username = $('#usuario').val().replace(/(\r\n|\n|\r)/gm,"").replace(/ /g,'');
+        var username = $('#usuario').val().replace(/(\r\n|\n|\r)/gm,"").replace(/ /g,'').toLowerCase();
     
         if(username != ''){
 
